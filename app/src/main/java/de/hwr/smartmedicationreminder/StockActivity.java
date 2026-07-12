@@ -1,24 +1,133 @@
 package de.hwr.smartmedicationreminder;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 public class StockActivity extends AppCompatActivity {
+
+    ListView listStock;
+    Button buttonCheck, buttonOrder, buttonBack;
+
+    ArrayList<String> stockList;
+    ArrayAdapter<String> adapter;
+
+    FirebaseFirestore db;
+    FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_stock);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        // Elemente finden
+        listStock = findViewById(R.id.listStock);
+        buttonCheck = findViewById(R.id.buttonCheck);
+        buttonOrder = findViewById(R.id.buttonOrder);
+        buttonBack = findViewById(R.id.buttonBack);
+
+        stockList = new ArrayList<>();
+        adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_list_item_1,
+                stockList
+        );
+
+        listStock.setAdapter(adapter);
+
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+
+        // Alle Medikamente mit Bestand anzeigen
+        loadStock(false);
+
+        // Nur niedrigen Bestand anzeigen
+        buttonCheck.setOnClickListener(v -> loadStock(true));
+
+        // Online-Apotheke im Browser öffnen
+        buttonOrder.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://www.shop-apotheke.com/")
+            );
+            startActivity(intent);
         });
+
+        buttonBack.setOnClickListener(v -> finish());
+    }
+
+    // Bestand aus Firestore laden
+    private void loadStock(boolean onlyLow) {
+
+        if (auth.getCurrentUser() == null) {
+            Toast.makeText(this, "Benutzer nicht angemeldet", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = auth.getCurrentUser().getUid();
+
+        db.collection("users")
+                .document(userId)
+                .collection("medications")
+                .get()
+                .addOnSuccessListener(result -> {
+
+                    stockList.clear();
+                    boolean lowStock = false;
+
+                    for (var document : result) {
+                        String name = document.getString("name");
+                        Long stock = document.getLong("stock");
+
+                        if (stock == null) {
+                            continue;
+                        }
+
+                        // Bei der Prüfung nur Bestand bis 5 anzeigen
+                        if (!onlyLow || stock <= 5) {
+                            stockList.add(name + " | Bestand: " + stock);
+                        }
+
+                        if (stock <= 5) {
+                            lowStock = true;
+                        }
+                    }
+
+                    if (stockList.isEmpty()) {
+                        if (onlyLow) {
+                            stockList.add("Kein niedriger Bestand");
+                        } else {
+                            stockList.add("Keine Medikamente vorhanden");
+                        }
+                    }
+
+                    // Nachbestellen nur bei niedrigem Bestand anzeigen
+                    if (onlyLow && lowStock) {
+                        buttonOrder.setVisibility(View.VISIBLE);
+                    } else {
+                        buttonOrder.setVisibility(View.GONE);
+                    }
+
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(error ->
+                        Toast.makeText(
+                                this,
+                                "Bestand konnte nicht geladen werden",
+                                Toast.LENGTH_SHORT
+                        ).show()
+                );
     }
 }
