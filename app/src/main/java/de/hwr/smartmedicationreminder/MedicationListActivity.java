@@ -11,11 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import android.app.AlertDialog;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+
 
 public class MedicationListActivity extends AppCompatActivity {
 
@@ -23,6 +25,7 @@ public class MedicationListActivity extends AppCompatActivity {
     Button buttonBack;
 
     ArrayList<String> medications;
+    ArrayList<String> medicationIds;
     ArrayAdapter<String> adapter;
 
     FirebaseFirestore db;
@@ -40,6 +43,7 @@ public class MedicationListActivity extends AppCompatActivity {
 
         // Liste vorbereiten
         medications = new ArrayList<>();
+        medicationIds = new ArrayList<>();
 
         adapter = new ArrayAdapter<>(
                 this,
@@ -90,6 +94,7 @@ public class MedicationListActivity extends AppCompatActivity {
                 .addOnSuccessListener(result -> {
 
                     medications.clear();
+                    medicationIds.clear();
 
                     result.forEach(document -> {
                         String name = document.getString("name");
@@ -104,6 +109,7 @@ public class MedicationListActivity extends AppCompatActivity {
                                         + stock;
 
                         medications.add(medication);
+                        medicationIds.add(document.getId());
                     });
 
                     adapter.notifyDataSetChanged();
@@ -115,5 +121,41 @@ public class MedicationListActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT
                         ).show()
                 );
+
+                listMedications.setOnItemLongClickListener((parent, view, position, id) -> {
+                    showDeleteDialog(position);
+                    return true;
+                });
     }
+                private void showDeleteDialog(int position) {
+
+                    new AlertDialog.Builder(this)
+                            .setTitle("Medikament löschen")
+                            .setMessage("Möchten Sie dieses Medikament wirklich löschen?")
+                            .setPositiveButton("Ja", (dialog, which) ->
+                                    deleteMedication(position))
+                            .setNegativeButton("Nein", null)
+                            .show();
+                }
+
+                private void deleteMedication(int position) {
+
+                    String userId = auth.getCurrentUser().getUid();
+
+                    db.collection("users")
+                            .document(userId)
+                            .collection("medications")
+                            .document(medicationIds.get(position))
+                            .delete()
+                            .addOnSuccessListener(result -> {
+
+                                medications.remove(position);
+                                medicationIds.remove(position);
+                                adapter.notifyDataSetChanged();
+
+                                Toast.makeText(this,
+                                        "Medikament gelöscht",
+                                        Toast.LENGTH_SHORT).show();
+                            });
+                }
 }
