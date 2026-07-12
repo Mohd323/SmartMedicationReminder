@@ -1,6 +1,7 @@
 package de.hwr.smartmedicationreminder;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import android.content.Intent;
 
 public class MedicationListActivity extends AppCompatActivity {
 
@@ -26,8 +26,9 @@ public class MedicationListActivity extends AppCompatActivity {
 
     ArrayList<String> medications;
     ArrayList<String> medicationIds;
-    ArrayAdapter<String> adapter;
     ArrayList<String> names, doses, times, stocks;
+
+    ArrayAdapter<String> adapter;
 
     FirebaseFirestore db;
     FirebaseAuth auth;
@@ -45,7 +46,6 @@ public class MedicationListActivity extends AppCompatActivity {
         // Listen vorbereiten
         medications = new ArrayList<>();
         medicationIds = new ArrayList<>();
-
         names = new ArrayList<>();
         doses = new ArrayList<>();
         times = new ArrayList<>();
@@ -63,38 +63,13 @@ public class MedicationListActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        loadMedications();
-
-        // Medikament durch langes Drücken löschen
-        listMedications.setOnItemLongClickListener((parent, view, position, id) -> {
-            showDeleteDialog(position);
-            return true;
-        });
-
-        buttonBack.setOnClickListener(v -> finish());
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars =
-                    insets.getInsets(WindowInsetsCompat.Type.systemBars());
-
-            v.setPadding(
-                    systemBars.left,
-                    systemBars.top,
-                    systemBars.right,
-                    systemBars.bottom
-            );
-
-            return insets;
-        });
-    }
-
-    // Medikamente aus Firestore laden
-    private void loadMedications() {
-
-        // Medikament bearbeiten
+        // Medikament durch kurzen Klick bearbeiten
         listMedications.setOnItemClickListener((parent, view, position, id) -> {
 
-            Intent intent = new Intent(this, EditMedicationActivity.class);
+            Intent intent = new Intent(
+                    MedicationListActivity.this,
+                    EditMedicationActivity.class
+            );
 
             intent.putExtra("id", medicationIds.get(position));
             intent.putExtra("name", names.get(position));
@@ -104,6 +79,46 @@ public class MedicationListActivity extends AppCompatActivity {
 
             startActivity(intent);
         });
+
+        // Medikament durch langen Klick löschen
+        listMedications.setOnItemLongClickListener((parent, view, position, id) -> {
+            showDeleteDialog(position);
+            return true;
+        });
+
+        buttonBack.setOnClickListener(v -> finish());
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+                findViewById(R.id.main),
+                (v, insets) -> {
+
+                    Insets systemBars =
+                            insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+                    v.setPadding(
+                            systemBars.left,
+                            systemBars.top,
+                            systemBars.right,
+                            systemBars.bottom
+                    );
+
+                    return insets;
+                }
+        );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Liste nach dem Bearbeiten neu laden
+        if (db != null && auth != null) {
+            loadMedications();
+        }
+    }
+
+    // Medikamente aus Firestore laden
+    private void loadMedications() {
 
         if (auth.getCurrentUser() == null) {
             Toast.makeText(
@@ -124,13 +139,13 @@ public class MedicationListActivity extends AppCompatActivity {
 
                     medications.clear();
                     medicationIds.clear();
-
                     names.clear();
                     doses.clear();
                     times.clear();
                     stocks.clear();
 
                     result.forEach(document -> {
+
                         String name = document.getString("name");
                         String dose = document.getString("dose");
                         String time = document.getString("time");
@@ -143,8 +158,6 @@ public class MedicationListActivity extends AppCompatActivity {
                                         + stock;
 
                         medications.add(medication);
-
-                        // Dokument-ID zum Löschen speichern
                         medicationIds.add(document.getId());
 
                         names.add(name);
@@ -170,8 +183,9 @@ public class MedicationListActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Medikament löschen")
                 .setMessage("Möchten Sie dieses Medikament wirklich löschen?")
-                .setPositiveButton("Ja", (dialog, which) ->
-                        deleteMedication(position)
+                .setPositiveButton(
+                        "Ja",
+                        (dialog, which) -> deleteMedication(position)
                 )
                 .setNegativeButton("Nein", null)
                 .show();
@@ -196,6 +210,11 @@ public class MedicationListActivity extends AppCompatActivity {
 
                     medications.remove(position);
                     medicationIds.remove(position);
+                    names.remove(position);
+                    doses.remove(position);
+                    times.remove(position);
+                    stocks.remove(position);
+
                     adapter.notifyDataSetChanged();
 
                     Toast.makeText(
@@ -211,13 +230,5 @@ public class MedicationListActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT
                         ).show()
                 );
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (db != null) {
-            loadMedications();
-        }
     }
 }
