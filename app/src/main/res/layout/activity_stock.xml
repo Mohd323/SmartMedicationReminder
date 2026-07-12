@@ -1,10 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StockActivity">
+    android:orientation="vertical"
+    android:padding="20dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Titel -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medikamentenbestand"
+        android:textSize="24sp" />
+
+    <!-- Liste mit Medikament und Anzahl -->
+    <ListView
+        android:id="@+id/listStock"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="20dp" />
+
+    <!-- Bestand prüfen -->
+    <Button
+        android:id="@+id/buttonCheck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bestand prüfen" />
+
+    <!-- Online nachbestellen -->
+    <Button
+        android:id="@+id/buttonOrder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Online nachbestellen"
+        android:visibility="gone" />
+
+    <!-- Zurück -->
+    <Button
+        android:id="@+id/buttonBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Zurück" />
+
+</LinearLayout>
