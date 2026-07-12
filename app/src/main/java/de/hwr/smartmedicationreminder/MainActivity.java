@@ -39,23 +39,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-private void login() {
-    String email = editEmail.getText().toString().trim();
-    String password = editPassword.getText().toString();
+    private void login() {
+        String email = editEmail.getText().toString().trim();
+        String password = editPassword.getText().toString();
 
-    // Eingaben prüfen
-    if (email.isEmpty() || password.isEmpty()) {
-        Toast.makeText(this, "Bitte alle Felder ausfüllen", Toast.LENGTH_SHORT).show();
-        return;
+        // Eingaben prüfen
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Bitte alle Felder ausfüllen", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Benutzer bei Firebase anmelden
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener(result -> {
+                    Toast.makeText(this, "Login erfolgreich", Toast.LENGTH_SHORT).show();
+
+                    // Nach erfolgreichem Login Home öffnen
+                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                })
+
+
+                .addOnFailureListener(error ->
+                        Toast.makeText(this, "Login fehlgeschlagen", Toast.LENGTH_SHORT).show()
+                );
     }
-
-    // Benutzer bei Firebase anmelden
-    auth.signInWithEmailAndPassword(email, password)
-            .addOnSuccessListener(result ->
-                    Toast.makeText(this, "Login erfolgreich", Toast.LENGTH_SHORT).show()
-            )
-            .addOnFailureListener(error ->
-                    Toast.makeText(this, "Login fehlgeschlagen", Toast.LENGTH_SHORT).show()
-            );
-}
 }
