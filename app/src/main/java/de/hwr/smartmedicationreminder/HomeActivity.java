@@ -1,6 +1,8 @@
 package de.hwr.smartmedicationreminder;
 
 import android.os.Bundle;
+import android.content.Intent;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +12,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class HomeActivity extends AppCompatActivity {
 
+    Button buttonAddMedication;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,6 +23,15 @@ public class HomeActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        // Button finden
+        buttonAddMedication = findViewById(R.id.buttonAddMedication);
+        
+        // Formular öffnen
+        buttonAddMedication.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, AddMedicationActivity.class);
+            startActivity(intent);
         });
     }
 }
