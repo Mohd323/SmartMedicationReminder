@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import android.content.Intent;
 
 public class MedicationListActivity extends AppCompatActivity {
 
@@ -26,6 +27,7 @@ public class MedicationListActivity extends AppCompatActivity {
     ArrayList<String> medications;
     ArrayList<String> medicationIds;
     ArrayAdapter<String> adapter;
+    ArrayList<String> names, doses, times, stocks;
 
     FirebaseFirestore db;
     FirebaseAuth auth;
@@ -43,6 +45,11 @@ public class MedicationListActivity extends AppCompatActivity {
         // Listen vorbereiten
         medications = new ArrayList<>();
         medicationIds = new ArrayList<>();
+
+        names = new ArrayList<>();
+        doses = new ArrayList<>();
+        times = new ArrayList<>();
+        stocks = new ArrayList<>();
 
         adapter = new ArrayAdapter<>(
                 this,
@@ -84,6 +91,20 @@ public class MedicationListActivity extends AppCompatActivity {
     // Medikamente aus Firestore laden
     private void loadMedications() {
 
+        // Medikament bearbeiten
+        listMedications.setOnItemClickListener((parent, view, position, id) -> {
+
+            Intent intent = new Intent(this, EditMedicationActivity.class);
+
+            intent.putExtra("id", medicationIds.get(position));
+            intent.putExtra("name", names.get(position));
+            intent.putExtra("dose", doses.get(position));
+            intent.putExtra("time", times.get(position));
+            intent.putExtra("stock", stocks.get(position));
+
+            startActivity(intent);
+        });
+
         if (auth.getCurrentUser() == null) {
             Toast.makeText(
                     this,
@@ -104,6 +125,11 @@ public class MedicationListActivity extends AppCompatActivity {
                     medications.clear();
                     medicationIds.clear();
 
+                    names.clear();
+                    doses.clear();
+                    times.clear();
+                    stocks.clear();
+
                     result.forEach(document -> {
                         String name = document.getString("name");
                         String dose = document.getString("dose");
@@ -120,6 +146,11 @@ public class MedicationListActivity extends AppCompatActivity {
 
                         // Dokument-ID zum Löschen speichern
                         medicationIds.add(document.getId());
+
+                        names.add(name);
+                        doses.add(dose);
+                        times.add(time);
+                        stocks.add(String.valueOf(stock));
                     });
 
                     adapter.notifyDataSetChanged();
@@ -180,5 +211,13 @@ public class MedicationListActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT
                         ).show()
                 );
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (db != null) {
+            loadMedications();
+        }
     }
 }
