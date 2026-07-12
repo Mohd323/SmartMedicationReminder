@@ -1,5 +1,6 @@
 package de.hwr.smartmedicationreminder;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -11,13 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import android.app.AlertDialog;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-
 
 public class MedicationListActivity extends AppCompatActivity {
 
@@ -41,7 +40,7 @@ public class MedicationListActivity extends AppCompatActivity {
         listMedications = findViewById(R.id.listMedications);
         buttonBack = findViewById(R.id.buttonBack);
 
-        // Liste vorbereiten
+        // Listen vorbereiten
         medications = new ArrayList<>();
         medicationIds = new ArrayList<>();
 
@@ -57,14 +56,19 @@ public class MedicationListActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        // Medikamente laden
         loadMedications();
 
-        // Zurück zum vorherigen Screen
+        // Medikament durch langes Drücken löschen
+        listMedications.setOnItemLongClickListener((parent, view, position, id) -> {
+            showDeleteDialog(position);
+            return true;
+        });
+
         buttonBack.setOnClickListener(v -> finish());
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets systemBars =
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars());
 
             v.setPadding(
                     systemBars.left,
@@ -81,7 +85,11 @@ public class MedicationListActivity extends AppCompatActivity {
     private void loadMedications() {
 
         if (auth.getCurrentUser() == null) {
-            Toast.makeText(this, "Benutzer nicht angemeldet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    this,
+                    "Benutzer nicht angemeldet",
+                    Toast.LENGTH_SHORT
+            ).show();
             return;
         }
 
@@ -109,6 +117,8 @@ public class MedicationListActivity extends AppCompatActivity {
                                         + stock;
 
                         medications.add(medication);
+
+                        // Dokument-ID zum Löschen speichern
                         medicationIds.add(document.getId());
                     });
 
@@ -121,41 +131,54 @@ public class MedicationListActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT
                         ).show()
                 );
-
-                listMedications.setOnItemLongClickListener((parent, view, position, id) -> {
-                    showDeleteDialog(position);
-                    return true;
-                });
     }
-                private void showDeleteDialog(int position) {
 
-                    new AlertDialog.Builder(this)
-                            .setTitle("Medikament löschen")
-                            .setMessage("Möchten Sie dieses Medikament wirklich löschen?")
-                            .setPositiveButton("Ja", (dialog, which) ->
-                                    deleteMedication(position))
-                            .setNegativeButton("Nein", null)
-                            .show();
-                }
+    // Sicherheitsfrage anzeigen
+    private void showDeleteDialog(int position) {
 
-                private void deleteMedication(int position) {
+        new AlertDialog.Builder(this)
+                .setTitle("Medikament löschen")
+                .setMessage("Möchten Sie dieses Medikament wirklich löschen?")
+                .setPositiveButton("Ja", (dialog, which) ->
+                        deleteMedication(position)
+                )
+                .setNegativeButton("Nein", null)
+                .show();
+    }
 
-                    String userId = auth.getCurrentUser().getUid();
+    // Medikament aus Firestore löschen
+    private void deleteMedication(int position) {
 
-                    db.collection("users")
-                            .document(userId)
-                            .collection("medications")
-                            .document(medicationIds.get(position))
-                            .delete()
-                            .addOnSuccessListener(result -> {
+        if (auth.getCurrentUser() == null) {
+            return;
+        }
 
-                                medications.remove(position);
-                                medicationIds.remove(position);
-                                adapter.notifyDataSetChanged();
+        String userId = auth.getCurrentUser().getUid();
+        String medicationId = medicationIds.get(position);
 
-                                Toast.makeText(this,
-                                        "Medikament gelöscht",
-                                        Toast.LENGTH_SHORT).show();
-                            });
-                }
+        db.collection("users")
+                .document(userId)
+                .collection("medications")
+                .document(medicationId)
+                .delete()
+                .addOnSuccessListener(result -> {
+
+                    medications.remove(position);
+                    medicationIds.remove(position);
+                    adapter.notifyDataSetChanged();
+
+                    Toast.makeText(
+                            this,
+                            "Medikament gelöscht",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                })
+                .addOnFailureListener(error ->
+                        Toast.makeText(
+                                this,
+                                "Löschen fehlgeschlagen",
+                                Toast.LENGTH_SHORT
+                        ).show()
+                );
+    }
 }
