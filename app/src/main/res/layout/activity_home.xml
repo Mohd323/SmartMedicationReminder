@@ -43,4 +43,12 @@
         android:layout_marginTop="15dp"
         android:text="Bestandswarnungen: Keine" />
 
+    <!-- Medikament hinzufügen -->
+    <Button
+    android:id="@+id/buttonAddMedication"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="30dp"
+    android:text="Medikament hinzufügen" />
+
 </LinearLayout>
