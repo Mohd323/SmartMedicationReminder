@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartMedicationReminder">
         <activity
+            android:name=".StockActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditMedicationActivity"
             android:exported="false" />
         <activity
