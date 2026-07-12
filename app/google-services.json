@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "228854041393",
+    "project_id": "smartmedicationreminder-419e8",
+    "storage_bucket": "smartmedicationreminder-419e8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228854041393:android:847cf63eabfb033c2bfe10",
+        "android_client_info": {
+          "package_name": "de.hwr.smartmedicationreminder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOt48vDeqB6bsj-MlipLIN-8pa9wjRwRg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
