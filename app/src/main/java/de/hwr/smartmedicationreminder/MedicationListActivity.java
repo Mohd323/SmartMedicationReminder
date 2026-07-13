@@ -278,24 +278,63 @@ public class MedicationListActivity extends AppCompatActivity {
 
     private void saveHistory(int position) {
 
+        if (auth.getCurrentUser() == null) {
+            return;
+        }
+
         String userId = auth.getCurrentUser().getUid();
+
+        int oldStock = Integer.parseInt(stocks.get(position));
+
+        if (oldStock <= 0) {
+            Toast.makeText(
+                    this,
+                    "Kein Bestand mehr vorhanden",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        int newStock = oldStock - 1;
 
         Map<String, Object> history = new HashMap<>();
 
         history.put("name", names.get(position));
-        String date = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-                .format(new Date());
+
+        String date = new SimpleDateFormat(
+                "dd.MM.yyyy HH:mm",
+                Locale.getDefault()
+        ).format(new Date());
 
         history.put("date", date);
 
+        // Zuerst Bestand reduzieren
         db.collection("users")
                 .document(userId)
-                .collection("history")
-                .add(history)
-                .addOnSuccessListener(result ->
+                .collection("medications")
+                .document(medicationIds.get(position))
+                .update("stock", newStock)
+                .addOnSuccessListener(result -> {
+
+                    // Danach Einnahme im Verlauf speichern
+                    db.collection("users")
+                            .document(userId)
+                            .collection("history")
+                            .add(history)
+                            .addOnSuccessListener(historyResult -> {
+                                Toast.makeText(
+                                        this,
+                                        "Einnahme gespeichert",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                loadMedications();
+                            });
+                })
+                .addOnFailureListener(error ->
                         Toast.makeText(
                                 this,
-                                "Einnahme gespeichert",
+                                "Bestand konnte nicht geändert werden",
                                 Toast.LENGTH_SHORT
                         ).show()
                 );
