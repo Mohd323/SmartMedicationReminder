@@ -17,6 +17,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.provider.Settings;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -167,6 +168,16 @@ private void scheduleReminder(String name, String time) {
             (AlarmManager) getSystemService(ALARM_SERVICE);
 
     // Erinnerung jeden Tag wiederholen
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        && !alarmManager.canScheduleExactAlarms()) {
+
+    startActivity(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM));
+    Toast.makeText(this,
+            "Alarme erlauben und Medikament danach erneut speichern",
+            Toast.LENGTH_LONG).show();
+    return;
+    }
+    
     try {
         alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
