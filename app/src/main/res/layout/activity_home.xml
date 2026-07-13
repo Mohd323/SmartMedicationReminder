@@ -31,13 +31,6 @@
         android:text="Nächste Einnahme: Keine Daten" />
 
     <TextView
-        android:id="@+id/textReminder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="Fällige Erinnerungen: Keine" />
-
-    <TextView
         android:id="@+id/textStock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
