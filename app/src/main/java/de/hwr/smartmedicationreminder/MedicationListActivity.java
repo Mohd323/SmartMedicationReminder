@@ -18,6 +18,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class MedicationListActivity extends AppCompatActivity {
 
@@ -66,18 +71,27 @@ public class MedicationListActivity extends AppCompatActivity {
         // Medikament durch kurzen Klick bearbeiten
         listMedications.setOnItemClickListener((parent, view, position, id) -> {
 
-            Intent intent = new Intent(
-                    MedicationListActivity.this,
-                    EditMedicationActivity.class
-            );
+            new AlertDialog.Builder(this)
+                    .setTitle("Einnahme")
+                    .setMessage("Medikament eingenommen?")
+                    .setPositiveButton("Ja", (dialog, which) ->
+                            saveHistory(position))
+                    .setNegativeButton("Bearbeiten", (dialog, which) -> {
 
-            intent.putExtra("id", medicationIds.get(position));
-            intent.putExtra("name", names.get(position));
-            intent.putExtra("dose", doses.get(position));
-            intent.putExtra("time", times.get(position));
-            intent.putExtra("stock", stocks.get(position));
+                        Intent intent = new Intent(
+                                MedicationListActivity.this,
+                                EditMedicationActivity.class
+                        );
 
-            startActivity(intent);
+                        intent.putExtra("id", medicationIds.get(position));
+                        intent.putExtra("name", names.get(position));
+                        intent.putExtra("dose", doses.get(position));
+                        intent.putExtra("time", times.get(position));
+                        intent.putExtra("stock", stocks.get(position));
+
+                        startActivity(intent);
+                    })
+                    .show();
         });
 
         // Medikament durch langen Klick löschen
@@ -231,4 +245,30 @@ public class MedicationListActivity extends AppCompatActivity {
                         ).show()
                 );
     }
+
+    private void saveHistory(int position) {
+
+        String userId = auth.getCurrentUser().getUid();
+
+        Map<String, Object> history = new HashMap<>();
+
+        history.put("name", names.get(position));
+        String date = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                .format(new Date());
+
+        history.put("date", date);
+
+        db.collection("users")
+                .document(userId)
+                .collection("history")
+                .add(history)
+                .addOnSuccessListener(result ->
+                        Toast.makeText(
+                                this,
+                                "Einnahme gespeichert",
+                                Toast.LENGTH_SHORT
+                        ).show()
+                );
+    }
+
 }

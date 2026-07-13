@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class HomeActivity extends AppCompatActivity {
 
-    Button buttonAddMedication,  buttonShowMedications, buttonStock;
+    Button buttonAddMedication,  buttonShowMedications, buttonStock, buttonHistory;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +29,7 @@ public class HomeActivity extends AppCompatActivity {
         buttonAddMedication = findViewById(R.id.buttonAddMedication);
         buttonShowMedications = findViewById(R.id.buttonShowMedications);
         buttonStock = findViewById(R.id.buttonStock);
+        buttonHistory = findViewById(R.id.buttonHistory);
         
         // Formular öffnen
         buttonAddMedication.setOnClickListener(v -> {
@@ -47,6 +48,13 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(HomeActivity.this, StockActivity.class);
             startActivity(intent);
         });
+
+        // Verlauf öffnen
+        buttonHistory.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, HistoryActivity.class);
+            startActivity(intent);
+        });
+
 
     }
 }
