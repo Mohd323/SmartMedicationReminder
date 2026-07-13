@@ -12,11 +12,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import android.content.Intent;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HistoryActivity extends AppCompatActivity {
 
     ListView listHistory;
     Button buttonBack;
+    BottomNavigationView bottomNavigation;
 
     ArrayList<String> history;
     ArrayAdapter<String> adapter;
@@ -31,6 +34,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         listHistory = findViewById(R.id.listHistory);
         buttonBack = findViewById(R.id.buttonBack);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
 
         history = new ArrayList<>();
 
@@ -48,6 +52,32 @@ public class HistoryActivity extends AppCompatActivity {
         loadHistory();
 
         buttonBack.setOnClickListener(v -> finish());
+
+        // Navigation zwischen den Hauptscreens
+        bottomNavigation.setOnItemSelectedListener(item -> {
+
+            Intent intent;
+
+            if (item.getItemId() == R.id.navHome) {
+                intent = new Intent(this, HomeActivity.class);
+
+            } else if (item.getItemId() == R.id.navMedications) {
+                intent = new Intent(this, MedicationListActivity.class);
+
+            } else if (item.getItemId() == R.id.navHistory) {
+                return true;
+
+            } else if (item.getItemId() == R.id.navStock) {
+                intent = new Intent(this, StockActivity.class);
+
+            } else {
+                intent = new Intent(this, SettingsActivity.class);
+            }
+
+            startActivity(intent);
+            return true;
+        });
+
     }
 
     private void loadHistory() {

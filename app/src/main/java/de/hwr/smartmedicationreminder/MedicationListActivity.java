@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,10 +25,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+
 public class MedicationListActivity extends AppCompatActivity {
 
     ListView listMedications;
     Button buttonBack;
+    BottomNavigationView bottomNavigation;
 
     ArrayList<String> medications;
     ArrayList<String> medicationIds;
@@ -47,6 +50,7 @@ public class MedicationListActivity extends AppCompatActivity {
         // Elemente finden
         listMedications = findViewById(R.id.listMedications);
         buttonBack = findViewById(R.id.buttonBack);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
 
         // Listen vorbereiten
         medications = new ArrayList<>();
@@ -119,6 +123,32 @@ public class MedicationListActivity extends AppCompatActivity {
                     return insets;
                 }
         );
+
+        // Navigation zwischen den Hauptscreens
+        bottomNavigation.setOnItemSelectedListener(item -> {
+
+            Intent intent;
+
+            if (item.getItemId() == R.id.navHome) {
+                intent = new Intent(this, HomeActivity.class);
+
+            } else if (item.getItemId() == R.id.navMedications) {
+                return true;
+
+            } else if (item.getItemId() == R.id.navHistory) {
+                intent = new Intent(this, HistoryActivity.class);
+
+            } else if (item.getItemId() == R.id.navStock) {
+                intent = new Intent(this, StockActivity.class);
+
+            } else {
+                intent = new Intent(this, SettingsActivity.class);
+            }
+
+            startActivity(intent);
+            return true;
+        });
+
     }
 
     @Override

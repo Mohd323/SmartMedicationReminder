@@ -9,10 +9,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class SettingsActivity extends AppCompatActivity {
 
     Button buttonResetPassword, buttonLogout, buttonBack;
+    BottomNavigationView bottomNavigation;
     FirebaseAuth auth;
 
     @Override
@@ -24,12 +26,39 @@ public class SettingsActivity extends AppCompatActivity {
         buttonResetPassword = findViewById(R.id.buttonResetPassword);
         buttonLogout = findViewById(R.id.buttonLogout);
         buttonBack = findViewById(R.id.buttonBack);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
 
         auth = FirebaseAuth.getInstance();
 
         buttonResetPassword.setOnClickListener(v -> resetPassword());
         buttonLogout.setOnClickListener(v -> logout());
         buttonBack.setOnClickListener(v -> finish());
+
+        // Navigation zwischen den Hauptscreens
+        bottomNavigation.setOnItemSelectedListener(item -> {
+
+            Intent intent;
+
+            if (item.getItemId() == R.id.navHome) {
+                intent = new Intent(this, HomeActivity.class);
+
+            } else if (item.getItemId() == R.id.navMedications) {
+                intent = new Intent(this, MedicationListActivity.class);
+
+            } else if (item.getItemId() == R.id.navHistory) {
+                intent = new Intent(this, HistoryActivity.class);
+
+            } else if (item.getItemId() == R.id.navStock) {
+                intent = new Intent(this, StockActivity.class);
+
+            } else {
+                return true;
+            }
+
+            startActivity(intent);
+            return true;
+        });
+
     }
 
     // E-Mail zum Zurücksetzen des Passworts senden

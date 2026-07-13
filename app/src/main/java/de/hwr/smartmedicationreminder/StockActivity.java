@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,7 @@ public class StockActivity extends AppCompatActivity {
 
     ListView listStock;
     Button buttonCheck, buttonOrder, buttonBack;
+    BottomNavigationView bottomNavigation;
 
     ArrayList<String> stockList;
     ArrayAdapter<String> adapter;
@@ -37,6 +39,7 @@ public class StockActivity extends AppCompatActivity {
         buttonCheck = findViewById(R.id.buttonCheck);
         buttonOrder = findViewById(R.id.buttonOrder);
         buttonBack = findViewById(R.id.buttonBack);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
 
         stockList = new ArrayList<>();
         adapter = new ArrayAdapter<>(
@@ -66,6 +69,32 @@ public class StockActivity extends AppCompatActivity {
         });
 
         buttonBack.setOnClickListener(v -> finish());
+
+        // Navigation zwischen den Hauptscreens
+        bottomNavigation.setOnItemSelectedListener(item -> {
+
+            Intent intent;
+
+            if (item.getItemId() == R.id.navHome) {
+                intent = new Intent(this, HomeActivity.class);
+
+            } else if (item.getItemId() == R.id.navMedications) {
+                intent = new Intent(this, MedicationListActivity.class);
+
+            } else if (item.getItemId() == R.id.navHistory) {
+                intent = new Intent(this, HistoryActivity.class);
+
+            } else if (item.getItemId() == R.id.navStock) {
+                return true;
+
+            } else {
+                intent = new Intent(this, SettingsActivity.class);
+            }
+
+            startActivity(intent);
+            return true;
+        });
+
     }
 
     // Bestand aus Firestore laden

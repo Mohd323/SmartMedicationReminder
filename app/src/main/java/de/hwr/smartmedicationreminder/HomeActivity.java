@@ -9,10 +9,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity {
 
     Button buttonAddMedication,  buttonShowMedications, buttonStock, buttonHistory, buttonSettings;
+
+    BottomNavigationView bottomNavigation;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,7 @@ public class HomeActivity extends AppCompatActivity {
         buttonStock = findViewById(R.id.buttonStock);
         buttonHistory = findViewById(R.id.buttonHistory);
         buttonSettings = findViewById(R.id.buttonSettings);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
         
         // Formular öffnen
         buttonAddMedication.setOnClickListener(v -> {
@@ -60,6 +64,30 @@ public class HomeActivity extends AppCompatActivity {
         buttonSettings.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
             startActivity(intent);
+        });
+
+        bottomNavigation.setOnItemSelectedListener(item -> {
+
+            Intent intent;
+
+            if (item.getItemId() == R.id.navHome) {
+                return true;
+
+            } else if (item.getItemId() == R.id.navMedications) {
+                intent = new Intent(this, MedicationListActivity.class);
+
+            } else if (item.getItemId() == R.id.navHistory) {
+                intent = new Intent(this, HistoryActivity.class);
+
+            } else if (item.getItemId() == R.id.navStock) {
+                intent = new Intent(this, StockActivity.class);
+
+            } else {
+                intent = new Intent(this, SettingsActivity.class);
+            }
+
+            startActivity(intent);
+            return true;
         });
 
 
