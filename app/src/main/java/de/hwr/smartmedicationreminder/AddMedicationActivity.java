@@ -167,11 +167,11 @@ private void scheduleReminder(String name, String time) {
             (AlarmManager) getSystemService(ALARM_SERVICE);
 
     // Erinnerung jeden Tag wiederholen
-    alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            calendar.getTimeInMillis(),
-            AlarmManager.INTERVAL_DAY,
-            pendingIntent
-    );
+    alarmManager.setExactAndAllowWhileIdle(
+        AlarmManager.RTC_WAKEUP,
+        calendar.getTimeInMillis(),
+        pendingIntent
+);
+    
 }
 }
