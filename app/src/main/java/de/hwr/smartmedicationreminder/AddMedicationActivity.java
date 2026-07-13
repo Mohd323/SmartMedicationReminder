@@ -12,11 +12,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Calendar;
 
 public class AddMedicationActivity extends AppCompatActivity {
 
@@ -31,6 +38,17 @@ public class AddMedicationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_add_medication);
+
+        // Benachrichtigungen erlauben
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+        
+            requestPermissions(
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    100
+            );
+        }
 
         // Eingabefelder und Buttons finden
         editName = findViewById(R.id.editName);
@@ -76,6 +94,16 @@ public class AddMedicationActivity extends AppCompatActivity {
             return;
         }
 
+        // Uhrzeit muss zum Beispiel 08:30 sein
+        if (!time.matches("([01]\\d|2[0-3]):[0-5]\\d")) {
+            Toast.makeText(
+                    this,
+                    "Uhrzeit bitte als HH:mm eingeben",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
         int stock = Integer.parseInt(stockText);
 
         Map<String, Object> medication = new HashMap<>();
@@ -91,6 +119,9 @@ public class AddMedicationActivity extends AppCompatActivity {
                 .collection("medications")
                 .add(medication)
                 .addOnSuccessListener(documentReference -> {
+
+                    // Tägliche Erinnerung aktivieren
+                    scheduleReminder(name, time);
                     Toast.makeText(this, "Medikament gespeichert", Toast.LENGTH_SHORT).show();
                     finish();
                 })
@@ -98,4 +129,49 @@ public class AddMedicationActivity extends AppCompatActivity {
                         Toast.makeText(this, "Speichern fehlgeschlagen", Toast.LENGTH_SHORT).show()
                 );
     }
+
+    // Tägliche Erinnerung einstellen
+private void scheduleReminder(String name, String time) {
+
+    String[] parts = time.split(":");
+
+    int hour = Integer.parseInt(parts[0]);
+    int minute = Integer.parseInt(parts[1]);
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(Calendar.HOUR_OF_DAY, hour);
+    calendar.set(Calendar.MINUTE, minute);
+    calendar.set(Calendar.SECOND, 0);
+
+    // Wenn die Uhrzeit heute vorbei ist: morgen starten
+    if (calendar.before(Calendar.getInstance())) {
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+    }
+
+    Intent intent = new Intent(
+            this,
+            ReminderReceiver.class
+    );
+
+    intent.putExtra("name", name);
+
+    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+            this,
+            name.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+                    | PendingIntent.FLAG_IMMUTABLE
+    );
+
+    AlarmManager alarmManager =
+            (AlarmManager) getSystemService(ALARM_SERVICE);
+
+    // Erinnerung jeden Tag wiederholen
+    alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.getTimeInMillis(),
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+    );
+}
 }
