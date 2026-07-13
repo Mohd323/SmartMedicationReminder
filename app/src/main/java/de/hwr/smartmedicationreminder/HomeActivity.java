@@ -14,6 +14,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class HomeActivity extends AppCompatActivity {
 
     Button buttonAddMedication,  buttonShowMedications, buttonStock, buttonHistory, buttonSettings;
@@ -154,9 +158,20 @@ public class HomeActivity extends AppCompatActivity {
                             "Nächste Einnahme: " + nextMedication
                     );
 
-                    textReminder.setText(
-                            "Fällige Erinnerungen: Keine"
-                    );
+                    String currentTime = new SimpleDateFormat(
+                            "HH:mm",
+                            Locale.getDefault()
+                    ).format(new Date());
+
+                    if (!nextTime.equals("99:99") && nextTime.compareTo(currentTime) <= 0) {
+                        textReminder.setText(
+                                "Fällige Erinnerungen: " + nextMedication
+                        );
+                    } else {
+                        textReminder.setText(
+                                "Fällige Erinnerungen: Keine"
+                        );
+                    }
 
                     if (lowStockCount == 0) {
                         textStock.setText(
