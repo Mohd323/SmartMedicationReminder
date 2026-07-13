@@ -58,4 +58,11 @@
         android:layout_height="wrap_content"
         android:text="Medikamente anzeigen" />
 
+    <!-- Bestand öffnen -->
+    <Button
+        android:id="@+id/buttonStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bestand" />
+
 </LinearLayout>
