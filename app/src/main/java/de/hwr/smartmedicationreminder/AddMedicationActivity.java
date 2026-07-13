@@ -167,11 +167,19 @@ private void scheduleReminder(String name, String time) {
             (AlarmManager) getSystemService(ALARM_SERVICE);
 
     // Erinnerung jeden Tag wiederholen
-    alarmManager.setExactAndAllowWhileIdle(
-        AlarmManager.RTC_WAKEUP,
-        calendar.getTimeInMillis(),
-        pendingIntent
-);
+    try {
+        alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(),
+                pendingIntent
+        );
+    } catch (SecurityException e) {
+        Toast.makeText(
+                this,
+                "Bitte Alarme und Erinnerungen erlauben",
+                Toast.LENGTH_LONG
+        ).show();
+    }
     
 }
 }
