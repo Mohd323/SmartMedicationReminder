@@ -24,7 +24,7 @@ public class HomeActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigation;
 
-    TextView textNextMedication, textReminder, textStock;
+    TextView textNextMedication, textStock;
     FirebaseFirestore db;
     FirebaseAuth auth;
     
@@ -40,7 +40,6 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         textNextMedication = findViewById(R.id.textNextMedication);
-        textReminder = findViewById(R.id.textReminder);
         textStock = findViewById(R.id.textStock);
 
         db = FirebaseFirestore.getInstance();
@@ -121,69 +120,85 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     // Daten für den Home-Screen laden
-    private void loadDashboard() {
+private void loadDashboard() {
 
-        if (auth.getCurrentUser() == null) {
-            return;
-        }
-
-        String userId = auth.getCurrentUser().getUid();
-
-        db.collection("users")
-                .document(userId)
-                .collection("medications")
-                .get()
-                .addOnSuccessListener(result -> {
-
-                    String nextMedication = "Keine Daten";
-                    String nextTime = "99:99";
-                    int lowStockCount = 0;
-
-                    for (var document : result) {
-                        String name = document.getString("name");
-                        String time = document.getString("time");
-                        Long stock = document.getLong("stock");
-
-                        if (time != null && time.compareTo(nextTime) < 0) {
-                            nextTime = time;
-                            nextMedication = name + " - " + time;
-                        }
-
-                        if (stock != null && stock <= 5) {
-                            lowStockCount++;
-                        }
-                    }
-
-                    textNextMedication.setText(
-                            "Nächste Einnahme: " + nextMedication
-                    );
-
-                    String currentTime = new SimpleDateFormat(
-                            "HH:mm",
-                            Locale.getDefault()
-                    ).format(new Date());
-
-                    if (!nextTime.equals("99:99") && nextTime.compareTo(currentTime) <= 0) {
-                        textReminder.setText(
-                                "Fällige Erinnerungen: " + nextMedication
-                        );
-                    } else {
-                        textReminder.setText(
-                                "Fällige Erinnerungen: Keine"
-                        );
-                    }
-
-                    if (lowStockCount == 0) {
-                        textStock.setText(
-                                "Bestandswarnungen: Keine"
-                        );
-                    } else {
-                        textStock.setText(
-                                "Bestandswarnungen: " + lowStockCount
-                                        + " Medikament(e)"
-                        );
-                    }
-                });
+    if (auth.getCurrentUser() == null) {
+        return;
     }
+
+    String userId = auth.getCurrentUser().getUid();
+
+    db.collection("users")
+            .document(userId)
+            .collection("medications")
+            .get()
+            .addOnSuccessListener(result -> {
+
+                String currentTime = new SimpleDateFormat(
+                        "HH:mm",
+                        Locale.getDefault()
+                ).format(new Date());
+
+                String nextName = null;
+                String nextTime = null;
+
+                String firstName = null;
+                String firstTime = null;
+
+                int lowStockCount = 0;
+
+                for (var document : result) {
+
+                    String name = document.getString("name");
+                    String time = document.getString("time");
+                    Long stock = document.getLong("stock");
+
+                    if (time != null) {
+
+                        // Früheste Einnahme insgesamt merken
+                        if (firstTime == null || time.compareTo(firstTime) < 0) {
+                            firstTime = time;
+                            firstName = name;
+                        }
+
+                        // Nächste noch kommende Einnahme heute
+                        if (time.compareTo(currentTime) >= 0
+                                && (nextTime == null || time.compareTo(nextTime) < 0)) {
+
+                            nextTime = time;
+                            nextName = name;
+                        }
+                    }
+
+                    if (stock != null && stock <= 5) {
+                        lowStockCount++;
+                    }
+                }
+
+                if (nextTime != null) {
+                    textNextMedication.setText(
+                            "Nächste Einnahme: " + nextName + " - " + nextTime
+                    );
+                } else if (firstTime != null) {
+                    textNextMedication.setText(
+                            "Nächste Einnahme: " + firstName
+                                    + " - " + firstTime + " (morgen)"
+                    );
+                } else {
+                    textNextMedication.setText(
+                            "Nächste Einnahme: Keine Daten"
+                    );
+                }
+
+                if (lowStockCount == 0) {
+                    textStock.setText("Bestandswarnungen: Keine");
+                } else {
+                    textStock.setText(
+                            "Bestandswarnungen: "
+                                    + lowStockCount + " Medikament(e)"
+                    );
+                }
+            });
+}
 
 }
