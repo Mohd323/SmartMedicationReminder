@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- Hauptlayout: Android-Namespace, App-Namespace, ID des Layouts, Ganze Breite, Ganze Höhe, Elemente untereinander, Abstand zum Rand -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
@@ -8,14 +9,14 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-    <!-- Titel -->
+    <!-- Titel: Breite nach Inhalt, Höhe nach Inhalt, Text anzeigen, Schriftgröße -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Meine Medikamente"
         android:textSize="24sp" />
 
-    <!-- Medikamentenliste -->
+    <!-- Medikamentenliste: ID, Ganze Breite, Höhe mit Gewicht, Abstand nach oben -->
     <ListView
         android:id="@+id/listMedications"
         android:layout_width="match_parent"
@@ -23,14 +24,14 @@
         android:layout_weight="1"
         android:layout_marginTop="20dp" />
 
-    <!-- Zurück -->
+    <!-- Zurück-Button: ID, Ganze Breite, Höhe nach Inhalt, Text -->
     <Button
         android:id="@+id/buttonBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Zurück" />
 
-    <!-- Navigation -->
+    <!-- BottomNavigationView: ID, Ganze Breite, Höhe nach Inhalt, Menü -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"

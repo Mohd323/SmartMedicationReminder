@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- Hauptlayout: Android-Namespace, ID des Layouts, Ganze Breite, Ganze Höhe, Elemente untereinander, Abstand zum Rand -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
@@ -8,28 +9,28 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-    <!-- Titel -->
+    <!-- Titel: Breite nach Inhalt, Höhe nach Inhalt, Text anzeigen, Schriftgröße -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Registrieren"
         android:textSize="24sp" />
 
-    <!-- Name -->
+    <!-- Eingabefeld für Name: ID, Ganze Breite, Höhe nach Inhalt, Hinweis -->
     <EditText
         android:id="@+id/editName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Name" />
 
-    <!-- E-Mail -->
+    <!-- Eingabefeld für E-Mail: ID, Ganze Breite, Höhe nach Inhalt, Hinweis -->
     <EditText
         android:id="@+id/editEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="E-Mail" />
 
-    <!-- Passwort -->
+    <!-- Eingabefeld für Passwort: ID, Ganze Breite, Höhe nach Inhalt, Hinweis, Passwort verbergen -->
     <EditText
         android:id="@+id/editPassword"
         android:layout_width="match_parent"
@@ -37,14 +38,14 @@
         android:hint="Passwort"
         android:inputType="textPassword" />
 
-    <!-- Registrieren -->
+    <!-- Registrieren-Button: ID, Ganze Breite, Höhe nach Inhalt, Text -->
     <Button
         android:id="@+id/buttonRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Registrieren" />
 
-    <!-- Zurück -->
+    <!-- Zurück-Button: ID, Ganze Breite, Höhe nach Inhalt, Text -->
     <Button
         android:id="@+id/buttonBack"
         android:layout_width="match_parent"
