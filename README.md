@@ -53,3 +53,8 @@ Matrikelnummer: **77207852704**
 5. Einnahme bestätigen.
 6. Verlauf ansehen.
 7. Einstellungen verwenden.
+
+---
+
+## Ablaufdiagramm
+Das Ablaufdiagramm befindet sich im Ordner "docs" als Ablaufdiagramm.pdf.
