@@ -1,21 +1,21 @@
 package de.hwr.smartmedicationreminder;
 
-import android.os.Bundle;
-import android.widget.ArrayAdapter;
+import android.os.Bundle;                       // Android-Objekt zum Speichern und Übergeben von Daten zwischen Activity
+import android.widget.ArrayAdapter;             // Verbindet die Daten (ArrayList) mit der ListView
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ListView;                  // Zeigt eine Liste von Einträgen an
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;            // Android-Basisklasse für Activities. (Unsere Klasse als Bildschirm in der App anzeigen)
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseAuth;               // Firebase Authentication
+import com.google.firebase.firestore.FirebaseFirestore;    // für das Speichern und Lesen von Daten
 
 import java.util.ArrayList;
-import android.content.Intent;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import android.content.Intent;                             // Zwischen Activity wechseln können
+import com.google.android.material.bottomnavigation.BottomNavigationView;       // Navigation am unteren Bildschirmrand
 
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends AppCompatActivity {    // erbt alle Funktionen
 
     ListView listHistory;
     Button buttonBack;
@@ -27,37 +27,43 @@ public class HistoryActivity extends AppCompatActivity {
     FirebaseFirestore db;
     FirebaseAuth auth;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
+    @Override                                                       // Wir überschreiben die Methode der Elternklasse
+    protected void onCreate(Bundle savedInstanceState) {    // wird automatisch beim Öffnen der Activity aufgerufen, initialisieren die Benutzeroberfläche und unsere Variablen
+        super.onCreate(savedInstanceState);                 // Elternklasse initialisieren
+        setContentView(R.layout.activity_history);                  // XML-Layout laden (zeigt das Layout activity_history.xml auf dem Bildschirm an)
 
-        listHistory = findViewById(R.id.listHistory);
+        // Elemente aus dem XML finden (Java mit XML verbinden)
+        listHistory = findViewById(R.id.listHistory);               // findViewById = sucht Element anhand der ID
         buttonBack = findViewById(R.id.buttonBack);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
+        // Erstellt eine leere Liste für den Verlauf
         history = new ArrayList<>();
 
+        //ArrayList mit der ListView vorbereiten (this: aktuelle Activity, simple_list_item_1: eine Zeile pro Element, history: ArrayList Daten)
         adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
                 history
         );
 
+        // Verbindet die ListView mit dem Adapter
         listHistory.setAdapter(adapter);
 
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();           // Firestore-Instanz holen
+        auth = FirebaseAuth.getInstance();              // Verbindung zu Firebase Authentication
 
-        loadHistory();
+        loadHistory();                                  // Methode
 
-        buttonBack.setOnClickListener(v -> finish());
+        buttonBack.setOnClickListener(v -> finish());        // Schließt die aktuelle Activity
+
 
         // Navigation zwischen den Hauptscreens
         bottomNavigation.setOnItemSelectedListener(item -> {
 
             Intent intent;
 
+            // Prüfen, welches Menüelement ausgewählt wurde
             if (item.getItemId() == R.id.navHome) {
                 intent = new Intent(this, HomeActivity.class);
 
@@ -65,7 +71,7 @@ public class HistoryActivity extends AppCompatActivity {
                 intent = new Intent(this, MedicationListActivity.class);
 
             } else if (item.getItemId() == R.id.navHistory) {
-                return true;
+                return true;                         // Bereits auf History → nichts machen
 
             } else if (item.getItemId() == R.id.navStock) {
                 intent = new Intent(this, StockActivity.class);
@@ -82,29 +88,30 @@ public class HistoryActivity extends AppCompatActivity {
 
     private void loadHistory() {
 
-        if (auth.getCurrentUser() == null) return;
+        if (auth.getCurrentUser() == null) return;      // Prüfen, ob ein Benutzer angemeldet ist - Methode beenden, wenn niemand angemeldet ist
 
-        String userId = auth.getCurrentUser().getUid();
+        String userId = auth.getCurrentUser().getUid();   // Aktuelle Benutzer-ID aus Firebase holen
 
+        // Firestore-Pfad: users -> userId -> history
         db.collection("users")
                 .document(userId)
                 .collection("history")
-                .get()
-                .addOnSuccessListener(result -> {
+                .get()                              //  MedikamentHistory (Verlauf) des Benutzers laden
+                .addOnSuccessListener(result -> { // wenn das Laden erfolgreich ist
 
-                    history.clear();
+                    history.clear();                                     // Alte Einträge löschen, damit keine Duplikate entstehen
 
-                    result.forEach(document -> {
+                    result.forEach(document -> {    // Geht durch alle Dokumente im Ergebnis
 
-                        String name = document.getString("name");
-                        String date = document.getString("date");
+                        String name = document.getString("name");   // Liest den Medikamentennamen
+                        String date = document.getString("date");   // Liest das Datum
 
-                        history.add(name + " | " + date);
+                        history.add(name + " | " + date);                // Fügt den Eintrag zur ArrayList hinzu
                     });
 
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();             // Aktualisiert die ListView nach den Änderungen
                 })
-                .addOnFailureListener(error ->
+                .addOnFailureListener(error ->        // Wird ausgeführt, wenn das Laden fehlschlägt
                         Toast.makeText(
                                 this,
                                 "Verlauf konnte nicht geladen werden",
