@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- Hauptlayout:  Android-Namespace,  ID des Layouts, Ganze Breite, Ganze Höhe, Elemente untereinander, Abstand zum Rand -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
@@ -8,21 +9,21 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-    <!-- Titel -->
+    <!-- Titel: Text anzeigen, Größe des Textes -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Smart Medication Reminder"
         android:textSize="24sp" />
 
-    <!-- E-Mail -->
+    <!-- E-Mail: ID, Ganze Breite, Höhe, Hinweis  -->
     <EditText
         android:id="@+id/editEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="E-Mail" />
 
-    <!-- Passwort -->
+    <!-- Eingabefeld für Passwort: ID, Ganze Breite, Höhe, Hinweis, Passwort verbergen -->
     <EditText
         android:id="@+id/editPassword"
         android:layout_width="match_parent"
@@ -30,14 +31,14 @@
         android:hint="Passwort"
         android:inputType="textPassword" />
 
-    <!-- Login -->
+    <!-- Login: ID, Ganze Breite, Höhe, Text -->
     <Button
         android:id="@+id/buttonLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Login" />
 
-    <!-- Registrieren -->
+    <!-- Registrieren: ID, Ganze Breite, Höhe, Text -->
     <Button
         android:id="@+id/buttonRegister"
         android:layout_width="match_parent"
