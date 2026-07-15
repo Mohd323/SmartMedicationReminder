@@ -9,7 +9,7 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-    <!-- Titel: Text anzeigen, Größe des Textes -->
+    <!-- Titel: Breite nach Inhalt, Höhe nach Inhalt, Text anzeigen, Größe des Textes -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

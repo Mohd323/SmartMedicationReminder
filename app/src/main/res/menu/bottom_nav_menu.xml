@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- Menü: Android-Namespace -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <!-- Home: ID, Symbol, Titel -->
     <item
         android:id="@+id/navHome"
         android:icon="@android:drawable/ic_menu_view"
         android:title="Home" />
-
+    <!-- Medikamente: ID, Symbol, Titel -->
     <item
         android:id="@+id/navMedications"
         android:icon="@android:drawable/ic_menu_agenda"
         android:title="Medikamente" />
-
+    <!-- Verlauf: ID, Symbol, Titel -->
     <item
         android:id="@+id/navHistory"
         android:icon="@android:drawable/ic_menu_recent_history"
         android:title="Verlauf" />
-
+    <!-- Bestand: ID, Symbol, Titel -->
     <item
         android:id="@+id/navStock"
         android:icon="@android:drawable/ic_menu_info_details"
         android:title="Bestand" />
-
+    <!-- Einstellungen: ID, Symbol, Titel -->
     <item
         android:id="@+id/navSettings"
         android:icon="@android:drawable/ic_menu_preferences"
