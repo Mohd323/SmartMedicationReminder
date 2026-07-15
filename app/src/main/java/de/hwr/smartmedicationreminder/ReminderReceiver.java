@@ -19,7 +19,7 @@ public class ReminderReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         String name = intent.getStringExtra("name");
-        String channelId = "medication_alarm";
+        String channelId = "medication_alarm"; // Die Kanal-ID ist ein eindeutiger Name
 
         // Alarmton verwenden
         Uri sound = RingtoneManager.getDefaultUri(
@@ -28,7 +28,7 @@ public class ReminderReceiver extends BroadcastReceiver {
 
         // Benachrichtigungskanal ab Android 8
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
+// wie Android den Ton behandeln soll
             AudioAttributes audio = new AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_ALARM)
                     .build();
@@ -43,9 +43,9 @@ public class ReminderReceiver extends BroadcastReceiver {
             channel.enableVibration(true);
 
             NotificationManager manager =
-                    context.getSystemService(NotificationManager.class);
+                    context.getSystemService(NotificationManager.class); //Android-Systemdienst, Er verwaltet alle Benachrichtigungen.
 
-            manager.createNotificationChannel(channel);
+            manager.createNotificationChannel(channel); // Hier wird der Kanal bei Android angemeldet.
         }
 
         // Benachrichtigung erstellen

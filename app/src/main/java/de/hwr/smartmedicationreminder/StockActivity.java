@@ -17,6 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
+//  Benutzer öffnet AddMedicationActivity
 public class StockActivity extends AppCompatActivity {
 
     ListView listStock;
@@ -32,26 +33,27 @@ public class StockActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stock);
+        setContentView(R.layout.activity_stock); // Layout und Eingabefelder werden geladen
 
-        // Elemente finden
+        // Oberflächenelemente aus dem XML-Layout verbinden
         listStock = findViewById(R.id.listStock);
         buttonCheck = findViewById(R.id.buttonCheck);
         buttonOrder = findViewById(R.id.buttonOrder);
         buttonBack = findViewById(R.id.buttonBack);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
-        stockList = new ArrayList<>();
+        stockList = new ArrayList<>(); // Leere Liste für die Medikamentenbestände erstellen
+        // Adapter erstellen und mit der Liste verbinden
         adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
                 stockList
         );
 
-        listStock.setAdapter(adapter);
+        listStock.setAdapter(adapter); // Adapter mit der ListView verbinden
 
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance(); // Verbindung zur Firestore-Datenbank herstellen
+        auth = FirebaseAuth.getInstance(); // Verbindung zur Firebase-Authentifizierung herstellen
 
         // Alle Medikamente mit Bestand anzeigen
         loadStock(false);
@@ -111,7 +113,7 @@ public class StockActivity extends AppCompatActivity {
                 .document(userId)
                 .collection("medications")
                 .get()
-                .addOnSuccessListener(result -> {
+                .addOnSuccessListener(result -> { //Wird ausgeführt, wenn die Daten erfolgreich geladen wurden
 
                     stockList.clear();
                     boolean lowStock = false;
@@ -148,7 +150,8 @@ public class StockActivity extends AppCompatActivity {
                     } else {
                         buttonOrder.setVisibility(View.GONE);
                     }
-
+                    // Adapter informieren, dass sich stockList geändert hat
+                    //Dadurch wird die ListView auf dem Bildschirm aktualisiert
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(error ->

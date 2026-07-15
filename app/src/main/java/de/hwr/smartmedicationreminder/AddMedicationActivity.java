@@ -73,7 +73,7 @@ public class AddMedicationActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-
+// wird festgelegt, dass die Hauptansicht auf die Größe der Systemleisten reagieren soll.
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -81,13 +81,14 @@ public class AddMedicationActivity extends AppCompatActivity {
         });
     }
 
-    // Medikament in Firestore speichern
+    // Eingaben lesen
     private void saveMedication() {
 
         String name = editName.getText().toString().trim();
         String dose = editDose.getText().toString().trim();
         String time = editTime.getText().toString().trim();
         String stockText = editStock.getText().toString().trim();
+
 
         // Prüfen ob alle Felder ausgefüllt sind
         if (name.isEmpty() || dose.isEmpty() || time.isEmpty() || stockText.isEmpty()) {
@@ -108,7 +109,7 @@ public class AddMedicationActivity extends AppCompatActivity {
         int stock = Integer.parseInt(stockText);
 
         Map<String, Object> medication = new HashMap<>();
-        medication.put("name", name);
+        medication.put("name", name); // Speichert den Medikamentennamen unter dem Schlüssel name
         medication.put("dose", dose);
         medication.put("time", time);
         medication.put("stock", stock);
@@ -160,7 +161,7 @@ private void scheduleReminder(String name, String time) {
             this,
             name.hashCode(),
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_UPDATE_CURRENT //Falls bereits ein entsprechender PendingIntent existiert, werden dessen Daten aktualisiert.
                     | PendingIntent.FLAG_IMMUTABLE
     );
 
@@ -168,6 +169,7 @@ private void scheduleReminder(String name, String time) {
             (AlarmManager) getSystemService(ALARM_SERVICE);
 
     // Erinnerung jeden Tag wiederholen
+    // Wenn das Gerät Android 12 oder neuer verwendet und die App keine exakten Alarme planen darf.
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         && !alarmManager.canScheduleExactAlarms()) {
 
