@@ -31,6 +31,14 @@ public class MainActivity extends AppCompatActivity {  // erbt alle Funktionen
         // Verbindung zu Firebase Authentication
         auth = FirebaseAuth.getInstance();
 
+        // Prüfen ob Benutzer bereits angemeldet ist
+        if (auth.getCurrentUser() != null) {
+
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         // Beim Klick Login-Methode ausführen
         buttonLogin.setOnClickListener(v -> login());
 
