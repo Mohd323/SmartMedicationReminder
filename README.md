@@ -3,20 +3,21 @@
 ## Projekt
 
 SmartMedicationReminder ist eine Android-App zur Verwaltung von Medikamenten.
-Benutzer können Medikamente speichern, bearbeiten, löschen und ihren Bestand verwalten.
-Zusätzlich bietet die App Erinnerungen sowie einen Einnahmeverlauf.
+Benutzer können Medikamente hinzufügen, bearbeiten, löschen und ihren Bestand verwalten.
+Zusätzlich bietet die App Erinnerungen, einen Einnahmeverlauf sowie eine Online-Nachbestellung.
 
 ---
 
 ## Funktionen
 
 - Registrierung und Login mit Firebase Authentication
+- Benutzer bleibt nach dem Login angemeldet (bis Logout)
 - Medikamente hinzufügen
 - Medikamente bearbeiten
 - Medikamente löschen
 - Medikamentenliste anzeigen
 - Bestandsverwaltung
-- Bestandswarnung
+- Bestandswarnung bei niedrigem Bestand
 - Online-Nachbestellung
 - Einnahmeverlauf
 - Passwort zurücksetzen
@@ -56,5 +57,17 @@ Matrikelnummer: **77207852704**
 
 ---
 
-## Ablaufdiagramm
-Das Ablaufdiagramm befindet sich im Ordner "docs" als Ablaufdiagramm.pdf.
+## Dokumentation
+
+Im Ordner **docs** befinden sich:
+
+- Aktuelles Ablaufdiagramm (`Ablaufdiagramm.pdf`)
+- Video-Nachweis der Nachbesserung (`Video.mp4`), welcher zeigt, dass angemeldete Benutzer nach dem erneuten Start der App automatisch angemeldet bleiben.
+
+---
+
+## APK
+
+Die lauffähige APK befindet sich im Ordner **apk** als:
+
+`SmartMedicationReminder.apk`
